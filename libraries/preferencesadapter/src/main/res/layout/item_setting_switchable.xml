@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?attr/item_click_background_transparent"
+              android:gravity="center_vertical"
+              android:orientation="horizontal"
+              android:padding="@dimen/base_padding_large">
+
+    <ImageView
+        android:id="@+id/iv_setting_item_switchable_icon"
+        android:layout_width="@dimen/setting_item_icon_size"
+        android:layout_height="@dimen/setting_item_icon_size"
+        android:layout_marginRight="@dimen/setting_icon_title_padding"
+        android:scaleType="fitCenter"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tv_setting_item_switchable_title"
+        style="@style/TextView.Setting"/>
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/switch_setting_item_switchable_toggle"
+        android:layout_width="52dp"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"/>
+</LinearLayout>

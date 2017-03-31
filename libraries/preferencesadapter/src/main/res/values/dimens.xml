@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Setting -->
+    <dimen name="setting_item_icon_size">20dp</dimen>
+    <dimen name="setting_icon_title_padding">@dimen/base_padding_xlarge</dimen>
+    <dimen name="setting_item_title_text_size">@dimen/base_text_little</dimen>
+
+</resources>

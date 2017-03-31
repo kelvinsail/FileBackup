@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 背景色 -->
+    <color name="background_black_alpha">#5d000000</color>
+    <color name="background_main">#FFFFFF</color>
+    <color name="background_gray">#DFDFDF</color>
+    <color name="background_gray_light">#F4F4F4</color>
+
+    <color name="background_white">#FFFFFF</color>
+    <color name="background_white_alpha">#88FFFFFF</color>
+
+    <color name="background_black">#000000</color>
+    <color name="background_black_alpha_light">#22666666</color>
+
+    <!-- 字体颜色 -->
+    <color name="text_white">#FFFFFF</color>
+    <color name="text_black">#666666</color>
+    <color name="text_gray">#979797</color>
+    <color name="text_gray_light">#cacaca</color>
+
+</resources>

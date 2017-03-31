@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="TextView" parent="@android:style/TextAppearance.Widget.TextView"/>
+
+    <style name="TextView.Setting">
+        <item name="android:textSize">@dimen/setting_item_title_text_size</item>
+        <item name="android:textColor">@color/text_setting</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:lineSpacingMultiplier">1.4</item>
+    </style>
+
+    <!-- 设置页面RadioButton的标签的样式  -->
+    <style name="SettingRadioStyle" parent="Widget.AppCompat.CompoundButton.RadioButton">
+        <item name="android:drawableRight">?android:attr/listChoiceIndicatorSingle</item>
+        <item name="android:button">@null</item>
+        <item name="android:paddingTop">@dimen/base_padding_normal</item>
+        <item name="android:paddingBottom">@dimen/base_padding_normal</item>
+        <item name="android:background">?attr/item_click_background_transparent</item>
+        <item name="android:drawablePadding">@dimen/base_padding_normal</item>
+        <item name="android:textColor">@color/text_black</item>
+        <item name="android:textSize">@dimen/setting_item_title_text_size</item>
+        <item name="android:gravity">center_vertical|left</item>
+    </style>
+
+</resources>

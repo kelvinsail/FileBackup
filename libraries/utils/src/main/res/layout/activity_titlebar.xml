@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/layout_toolbar_activity"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@android:color/transparent"
+                android:fitsSystemWindows="false">
+
+
+    <android.support.design.widget.AppBarLayout
+        android:id="@+id/abl_toolbar_activity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fitsSystemWindows="false"
+        android:theme="@style/AppBarOverlay">
+
+        <View
+            android:id="@+id/view_starus_bar_replace"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="?attr/colorPrimaryDark"
+            android:fitsSystemWindows="false"/>
+
+        <com.yifan.utils.widget.TitleBar
+            android:id="@+id/titlebar_toolbar_activity"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:fitsSystemWindows="false"
+            app:popupTheme="@style/PopupOverlay"/>
+
+        <android.support.v7.widget.ViewStubCompat
+            android:id="@+id/vsc_toolbar_activity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <android.support.v7.widget.ViewStubCompat
+        android:id="@+id/vsc_toolbar_activity_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/abl_toolbar_activity"/>
+
+    <com.yifan.utils.widget.LoadingView
+        android:id="@+id/loadingview_toolbar_activity"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/abl_toolbar_activity"/>
+
+</RelativeLayout>

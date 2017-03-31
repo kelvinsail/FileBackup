@@ -1,0 +1,17 @@
+<resources>
+
+    <string name="app_name">Utils</string>
+
+    <string name="root_dir_name">Utils</string>
+
+    <string name="navigation_drawer_open">navigation_drawer_open</string>
+    <string name="navigation_drawer_close">navigation_drawer_close</string>
+
+    <!-- Loading -->
+    <string name="loading">正在加载&#8230;</string>
+    <string name="progressing">正在处理&#8230;</string>
+    <string name="submiting">正在提交&#8230;</string>
+    <string name="not_more_data">近期已无更多数据</string>
+    <string name="load_fail">加载失败&#8230;</string>
+
+</resources>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--<style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+        <!--<item name="custom_dilaog_style">@style/BaseDialog</item>-->
+    <!--</style>-->
+
+    <style name="Loading.ProgressBar" parent="@android:style/Widget.Holo.Light.ProgressBar.Inverse" />
+
+    <style name="Loading.ProgressBar.Large" parent="@android:style/Widget.Holo.Light.ProgressBar.Large.Inverse" />
+
+    <style name="Loading.ProgressBar.Small" parent="@android:style/Widget.Holo.Light.ProgressBar.Small.Inverse" />
+
+    <style name="AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="BaseDialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
+    <!-- LoadingDialog -->
+    <style name="LoadingDialog">
+        <item name="loading_dialog_progress_bar_style">@style/Loading.ProgressBar</item>
+        <item name="loading_dialog_background">@color/background_white</item>
+        <item name="loading_dialog_text_color">@color/text_black</item>
+        <item name="loading_dialog_text_size">@dimen/base_text_small</item>
+    </style>
+</resources>

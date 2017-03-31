@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res-auto">
+
+    <!--<style name="BaseAppTheme" parent="Theme.AppCompat.Light.NoActionBar">-->
+        <!--<item name="custom_dilaog_style">@style/BaseDialog</item>-->
+    <!--</style>-->
+
+    <style name="Loading.ProgressBar" parent="@android:style/Widget.Material.Light.ProgressBar.Inverse">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_atop</item>
+    </style>
+
+    <style name="Loading.ProgressBar.Large" parent="@android:style/Widget.Material.Light.ProgressBar.Large.Inverse">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_atop</item>
+    </style>
+
+    <style name="Loading.ProgressBar.Small" parent="@android:style/Widget.Material.Light.ProgressBar.Small.Inverse">
+        <item name="android:indeterminateTint">?attr/colorPrimary</item>
+        <item name="android:indeterminateTintMode">src_atop</item>
+    </style>
+
+</resources>

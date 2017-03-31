@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="wrap_content"
+             android:orientation="vertical">
+
+
+    <com.yifan.sdcardbackuper.ui.widget.MeasureSizeImageView
+        android:id="@+id/iv_photo_group_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:foreground="?attr/item_click_background_transparent"
+        android:scaleType="centerCrop"
+        tools:src="@mipmap/ic_launcher"/>
+
+    <CheckBox
+        android:id="@+id/cb_photo_group_item"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right|top"/>
+
+    <TextView
+        android:id="@+id/tv_photo_group_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/background_black_alpha"
+        android:padding="@dimen/base_padding_middle"
+        android:textColor="@color/text_white"
+        tools:text="123张图片"/>
+
+</FrameLayout>

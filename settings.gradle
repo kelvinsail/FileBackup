@@ -1,0 +1,1 @@
+include ':app', ':libraries:utils', ':libraries:preferencesadapter'

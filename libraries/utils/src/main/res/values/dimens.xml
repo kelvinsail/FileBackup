@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 字体大小 -->
+    <dimen name="base_text_mirco">10sp</dimen>
+    <dimen name="base_text_small">12sp</dimen>
+    <dimen name="base_text_little">14sp</dimen>
+    <dimen name="base_text_middle">16sp</dimen>
+    <dimen name="base_text_large">18sp</dimen>
+    <dimen name="base_text_xlarge">20sp</dimen>
+    <dimen name="base_text_xxlarge">22sp</dimen>
+    <dimen name="base_text_xxxlarge">26sp</dimen>
+    <dimen name="base_text_app_label">56sp</dimen>
+
+
+    <!-- LoadingDialog -->
+    <dimen name="loading_dialog_corners">3dp</dimen>
+    <dimen name="loading_dialog_progressbar_height">36dp</dimen>
+    <dimen name="loading_dialog_progressbar_width">36dp</dimen>
+    <dimen name="cloud_progressbar_height">4dp</dimen>
+
+
+    <dimen name="list_footer_left_right_padding">24dp</dimen>
+    <dimen name="list_footer_top_bottom_padding">12dp</dimen>
+
+    <!-- Padding & Margin -->
+    <dimen name="base_padding_small">4dp</dimen>
+    <dimen name="base_padding_normal">8dp</dimen>
+    <dimen name="base_padding_middle">12dp</dimen>
+    <dimen name="base_padding_large">16dp</dimen>
+    <dimen name="base_padding_xlarge">20dp</dimen>
+
+</resources>

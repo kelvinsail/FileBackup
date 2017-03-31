@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ptr_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--<android.support.design.widget.TabLayout-->
+        <!--android:id="@+id/layout_tab_main"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="?android:attr/actionBarSize"-->
+        <!--app:tabSelectedTextColor="?attr/colorAccent"-->
+        <!--app:tabTextColor="@color/text_gray" />-->
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vp_main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:id="@+id/layout_main_function_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:layout_gravity="bottom"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_main_copy"
+            style="@style/Button.FunctionBar"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:text="@string/backup" />
+    </LinearLayout>
+
+</FrameLayout>

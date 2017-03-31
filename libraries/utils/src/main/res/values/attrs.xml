@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- 正在加载弹窗-->
+    <attr name="loading_dialog_progress_bar_style" />
+    <attr name="loading_dialog_background" />
+    <attr name="loading_dialog_text_color" />
+    <attr name="loading_dialog_text_size" />
+
+
+    <attr name="custom_dilaog_style" format="reference" />
+
+    <attr name="item_click_background" format="reference"/>
+    <attr name="item_click_background_transparent" format="reference"/>
+</resources>
