@@ -37,6 +37,7 @@ import com.yifan.sdcardbackuper.task.BackupTask;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.setting.SettingFragment;
+import com.yifan.sdcardbackuper.ui.widget.TSManager;
 import com.yifan.sdcardbackuper.utils.Constants;
 import com.yifan.sdcardbackuper.utils.MountUtils;
 import com.yifan.sdcardbackuper.utils.UnSupportException;
@@ -220,8 +221,8 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                     nodeCount = FileCopyManager.getInstance().getFileTree().getAllNodesCount();
                 }
                 if (nodeCount <= 0) {
-                    Snackbar.make(mSnackBarLayout, mViewPager.getCurrentItem() == 0 ? R.string.tips_please_select_photoes :
-                            R.string.tips_please_select_files, Snackbar.LENGTH_SHORT).show();
+                    TSManager.showSnackTips(mSnackBarLayout, (mViewPager.getCurrentItem() == 0 ? R.string.tips_please_select_photoes :
+                            R.string.tips_please_select_files), Snackbar.LENGTH_SHORT);
                     return;
                 }
                 String[] pointNames = null;

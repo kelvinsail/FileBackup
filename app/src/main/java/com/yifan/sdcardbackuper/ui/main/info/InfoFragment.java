@@ -157,9 +157,13 @@ public class InfoFragment extends BaseDialogFragment {
                         opts.inSampleSize = 1;
                         opts.inJustDecodeBounds = false;
                         Bitmap bitmap = BitmapFactory.decodeFile(file.getAbsolutePath(), opts);
-                        int width = bitmap.getWidth();
-                        int height = bitmap.getHeight();
-                        bitmap.recycle();
+                        int width = 0;
+                        int height = 0;
+                        if (null != bitmap) {
+                            width = bitmap.getWidth();
+                            height = bitmap.getHeight();
+                            bitmap.recycle();
+                        }
                         mDatas.add(new FileInfo(ResourcesUtils.getString(R.string.property_photo_info),
                                 new StringBuilder(file.getName()).append("\n").append(FileUtils.formatFileLenght(file.length()))
                                         .append(" ").append(width).append("x").append(height).append("px").toString()));

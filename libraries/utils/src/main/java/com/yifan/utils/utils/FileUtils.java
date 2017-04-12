@@ -9,6 +9,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  * FileUtils
@@ -32,7 +33,8 @@ public class FileUtils {
         rootDir.mkdirs();
         File dir = new File(path);
         dir.mkdirs();
-        String name = new StringBuilder(fileName).append("_").append(System.currentTimeMillis()).append(".txt").toString();
+        String name = new StringBuilder(fileName).append(new SimpleDateFormat("_yyyyMMdd_HHmm")
+                .format(System.currentTimeMillis())).append(".txt").toString();
         File file = new File(new StringBuilder(path).append("/").append(name).toString());
         boolean isFileExisted = false;
         if (!file.exists()) {

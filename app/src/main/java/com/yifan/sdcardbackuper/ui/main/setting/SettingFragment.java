@@ -98,7 +98,8 @@ public class SettingFragment extends TitleBarFragment implements BaseRecyclerAda
                 .addSubItem(R.id.setting_backup_skip_existed_files, null, Type.switchable,
                         ResourcesUtils.getString(R.string.skip_existed_files),
                         Constants.KEY_PREFERENCES_SKIP_EXISTED_FILES,
-                        PreserencesValueType.Boolean, Constants.VALUE_PREFERENCES_SKIP_EXISTED_FILES, true).build();
+                        PreserencesValueType.Boolean, Constants.VALUE_PREFERENCES_SKIP_EXISTED_FILES, true)
+                .build();
 //                .addSubItem(R.id.setting_other_be_careof, null, Type.normal,
 //                        ResourcesUtils.getString(R.string.setting_other_be_careof), null, null, null, true)
 //                .addSubItem(R.id.setting_other_about, null, Type.normal,
