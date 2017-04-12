@@ -84,8 +84,15 @@ public class Constants {
     }
 
     /**
-     * PreferencesKey - 展示隐藏文件/文件夹
+     * PreferencesKey - 禁止复制到内部储存器中
      */
     public static final String KEY_PREFERENCES_COPY_TO_STORAGE = "key_preferences_copy_to_storage";
     public static final boolean VALUE_PREFERENCES_COPY_TO_STORAGE = true;
+
+
+    /**
+     * PreferencesKey - 复制时跳过已存在的文件
+     */
+    public static final String KEY_PREFERENCES_SKIP_EXISTED_FILES = "key_preferences_skip_existed_files";
+    public static final boolean VALUE_PREFERENCES_SKIP_EXISTED_FILES = true;
 }

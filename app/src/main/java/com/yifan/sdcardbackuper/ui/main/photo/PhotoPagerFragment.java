@@ -14,6 +14,7 @@ import com.yifan.sdcardbackuper.ui.widget.PullToRefreshLayout;
 import com.yifan.sdcardbackuper.utils.PhotoDataManager;
 import com.yifan.sdcardbackuper.model.photo.PhotoGroupItem;
 import com.yifan.sdcardbackuper.task.GetPhotoTask;
+import com.yifan.sdcardbackuper.utils.copy.FileCopyManager;
 import com.yifan.sdcardbackuper.utils.copy.PhotoCopyManager;
 import com.yifan.utils.base.BaseAsyncTask;
 import com.yifan.utils.base.BaseFragment;
@@ -128,6 +129,8 @@ public class PhotoPagerFragment extends BaseFragment implements
         if (null == mGetPhotoGroupListener) {
             mGetPhotoGroupListener = new OnGetPhotoGroupListener(new WeakReference<PhotoPagerFragment>(this));
         }
+        //清空已选择的文件、照片数据
+        FileCopyManager.getInstance().getFileTree().clearAll();
         mGetPhotoTask = new GetPhotoTask();
         mGetPhotoTask.setOnAsyncListener(mGetPhotoGroupListener);
         mGetPhotoTask.asyncExecute();

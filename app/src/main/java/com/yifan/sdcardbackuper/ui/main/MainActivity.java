@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -30,6 +32,7 @@ import android.widget.Toast;
 import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
+import com.yifan.sdcardbackuper.model.FileTree;
 import com.yifan.sdcardbackuper.task.BackupTask;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
@@ -37,6 +40,8 @@ import com.yifan.sdcardbackuper.ui.main.setting.SettingFragment;
 import com.yifan.sdcardbackuper.utils.Constants;
 import com.yifan.sdcardbackuper.utils.MountUtils;
 import com.yifan.sdcardbackuper.utils.UnSupportException;
+import com.yifan.sdcardbackuper.utils.copy.FileCopyManager;
+import com.yifan.sdcardbackuper.utils.copy.PhotoCopyManager;
 import com.yifan.utils.base.BaseAsyncTask;
 import com.yifan.utils.base.BaseFragment;
 import com.yifan.utils.base.TitleBarActivity;
@@ -70,6 +75,11 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
      * 底部工具栏布局
      */
     private LinearLayout mFunctionLayout;
+
+    /**
+     * {@link Snackbar} 弹出的位置布局
+     */
+    private CoordinatorLayout mSnackBarLayout;
 
     /**
      * 复制按钮
@@ -121,6 +131,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
         mTabLayout = (TabLayout) getBarExpandStub().inflate().findViewById(R.id.layout_tab_main);
         mViewPager = (ViewPager) findViewById(R.id.vp_main);
         mFunctionLayout = (LinearLayout) findViewById(R.id.layout_main_function_bar);
+        mSnackBarLayout = (CoordinatorLayout) findViewById(R.id.layout_main_snackbar);
         mCopyBtn = (Button) findViewById(R.id.btn_main_copy);
 
         LocalPagerAdapter adapter = new LocalPagerAdapter(getSupportFragmentManager());
@@ -201,6 +212,18 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_main_copy:
+                //判断是否已选择文件或照片
+                long nodeCount;
+                if (mViewPager.getCurrentItem() == 0) {
+                    nodeCount = PhotoCopyManager.getInstance().getFileTree().getAllNodesCount();
+                } else {
+                    nodeCount = FileCopyManager.getInstance().getFileTree().getAllNodesCount();
+                }
+                if (nodeCount <= 0) {
+                    Snackbar.make(mSnackBarLayout, mViewPager.getCurrentItem() == 0 ? R.string.tips_please_select_photoes :
+                            R.string.tips_please_select_files, Snackbar.LENGTH_SHORT).show();
+                    return;
+                }
                 String[] pointNames = null;
                 mPoints.clear();
                 try {
@@ -358,8 +381,12 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
         public void onUpdateProgress(CopyProgress... copyProgresses) {
             Log.i(TAG, "onUpdateProgress: " + copyProgresses[0].completedCount + " , " + copyProgresses[0].totalFileCount);
             if (null != mActivity.get()) {
-                mActivity.get().createLoadingdialog(ResourcesUtils.getString(R.string.start_to_copy_file,
-                        copyProgresses[0].completedCount, copyProgresses[0].totalFileCount), false, false);
+                StringBuilder builder = new StringBuilder(ResourcesUtils.getString(R.string.start_to_copy_file,
+                        copyProgresses[0].completedCount - copyProgresses[0].skipedCount, copyProgresses[0].totalFileCount));
+                if (copyProgresses[0].skipedCount > 0) {
+                    builder.append(ResourcesUtils.getString(R.string.start_to_copy_file_skip_count, copyProgresses[0].skipedCount));
+                }
+                mActivity.get().createLoadingdialog(builder.toString(), false, false);
             }
         }
     }

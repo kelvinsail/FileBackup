@@ -4,6 +4,7 @@
     <item name="setting_photo_show_from_sdcard" type="id"/>
     <item name="setting_file_show_hidden_file" type="id"/>
     <item name="setting_backup_copy_to_storage" type="id"/>
+    <item name="setting_backup_skip_existed_files" type="id"/>
     <item name="setting_other_be_careof" type="id"/>
     <item name="setting_other_about" type="id"/>
 

@@ -26,6 +26,11 @@ public class CopyProgress {
     public long completedCount;
 
     /**
+     * 跳过的文件数量
+     */
+    public long skipedCount;
+
+    /**
      * 当前文件路径
      */
     public String currentFilePath;

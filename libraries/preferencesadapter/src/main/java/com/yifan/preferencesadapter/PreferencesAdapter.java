@@ -32,7 +32,7 @@ import java.util.List;
  *
  * Created by yifan on 2016/12/22.
  */
-public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
+public class PreferencesAdapter extends BaseRecyclerAdapter<BasePrefHolder>
         implements CompoundButton.OnCheckedChangeListener, OnGroupCheckedChangeListener {
 
     /**
@@ -100,6 +100,7 @@ public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
 
     @Override
     public void onClick(View view) {
+        super.onClick(view);
         if (null != view && null != getOnItemClickListener()) {
             int position = BaseRecyclerHolder.getPositionFromView(view);
             int subPosition = BasePrefHolder.getSubPositionFromView(view);
@@ -128,6 +129,7 @@ public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
 
     @Override
     public boolean onLongClick(View view) {
+        super.onLongClick(view);
         if (null != view && null != getOnItemLongClickListener()) {
             int position = BaseRecyclerHolder.getPositionFromView(view);
             if (position >= 0) {
@@ -139,12 +141,54 @@ public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
 
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        super.onCheckedChanged(buttonView, isChecked);
         if (null != getOnItemCheckedListener()) {
             int position = BaseRecyclerHolder.getPositionFromView(buttonView);
             if (position >= 0) {
                 getOnItemCheckedListener().onItemChecked(buttonView, isChecked, position);
             }
         }
+    }
+
+    @Override
+    public BasePrefHolder onCreate(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_TYPE_GROUP:
+                return getGroupHolder(parent);
+            case ITEM_TYPE_NORMAL:
+                return getNormalHolder(parent);
+            case ITEM_TYPE_CHECK_GROUP:
+                return getCheckGroupHolder(parent);
+            case ITEM_TYPE_SWITCHABLE:
+                return getSwitchableHolder(parent);
+        }
+        return null;
+    }
+
+    @Override
+    public void onBind(BasePrefHolder viewHolder, int realPosition) {
+        if (null != viewHolder) {
+            viewHolder.setData(realPosition, mList.get(realPosition));
+        }
+    }
+
+    @Override
+    public int getRealItemCount() {
+        if (null != mList) {
+            mList.clear();
+        } else {
+            mList = new ArrayList<>();
+        }
+        if (null == mGroup) {
+            return 0;
+        }
+        mList.addAll(mGroup.getAllDatas());
+        return mList.size();
+    }
+
+    @Override
+    public BasePrefHolder getFakeHolder(View view) {
+        return null;
     }
 
     @Override
@@ -160,42 +204,6 @@ public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
                 return ITEM_TYPE_SWITCHABLE;
         }
         return super.getItemViewType(position);
-    }
-
-    @Override
-    public BasePrefHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        switch (viewType) {
-            case ITEM_TYPE_GROUP:
-                return getGroupHolder(parent);
-            case ITEM_TYPE_NORMAL:
-                return getNormalHolder(parent);
-            case ITEM_TYPE_CHECK_GROUP:
-                return getCheckGroupHolder(parent);
-            case ITEM_TYPE_SWITCHABLE:
-                return getSwitchableHolder(parent);
-        }
-        return null;
-    }
-
-    @Override
-    public void onBindViewHolder(BasePrefHolder holder, int position) {
-        if (null != holder) {
-            holder.setData(position, mList.get(position));
-        }
-    }
-
-    @Override
-    public int getItemCount() {
-        if (null != mList) {
-            mList.clear();
-        } else {
-            mList = new ArrayList<>();
-        }
-        if (null == mGroup) {
-            return 0;
-        }
-        mList.addAll(mGroup.getAllDatas());
-        return mList.size();
     }
 
     /**
@@ -380,8 +388,5 @@ public class PreferencesAdapter extends RecyclerView.Adapter<BasePrefHolder>
     public BasePrefHolder getSwitchableHolder(ViewGroup viewParent) {
         return new SwitchHolder(getLayoutInflater().inflate(R.layout.item_setting_switchable, viewParent, false));
     }
-
-
-    public interface On
 
 }

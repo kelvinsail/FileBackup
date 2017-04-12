@@ -255,4 +255,11 @@ public class FileTreeNode {
         return count;
     }
 
+    /**
+     * 清空数据
+     */
+    public void clearAll() {
+        nodes.clear();
+    }
+
 }

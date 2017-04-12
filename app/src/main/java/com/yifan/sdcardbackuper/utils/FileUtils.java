@@ -1,6 +1,7 @@
 package com.yifan.sdcardbackuper.utils;
 
 import android.media.MediaMetadataRetriever;
+import android.support.v4.provider.DocumentFile;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -34,7 +35,7 @@ public class FileUtils {
 //        return result;
 //    }
 
-//    /**
+    //    /**
 //     * 获取文件的MIME类型
 //     *
 //     * @param filePath
@@ -120,5 +121,27 @@ public class FileUtils {
             lenghtFormat = new StringBuilder(String.valueOf(new BigDecimal(lenght).divide(new BigDecimal(1024), 0, BigDecimal.ROUND_HALF_UP))).append(" KB").toString();
         }
         return lenghtFormat;
+    }
+
+    /**
+     * 根据长度对比两个同名文件是否一样
+     *
+     * @param originFile
+     * @param targetFile
+     * @return
+     */
+    public static boolean compareTwoFiles(File originFile, Object targetFile) {
+        if (null != originFile && originFile.exists() && null != targetFile) {
+            if (targetFile instanceof DocumentFile
+                    && ((DocumentFile) targetFile).exists()) {
+                return originFile.getName().equals(((DocumentFile) targetFile).getName())
+                        && originFile.length() == ((DocumentFile) targetFile).length();
+            } else if (targetFile instanceof File
+                    && ((File) targetFile).exists()) {
+                return originFile.getName().equals(((File) targetFile).getName())
+                        && originFile.length() == ((File) targetFile).length();
+            }
+        }
+        return false;
     }
 }

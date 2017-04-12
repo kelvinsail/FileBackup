@@ -1,5 +1,6 @@
 package com.yifan.sdcardbackuper.task;
 
+import android.preference.PreferenceManager;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
@@ -67,6 +68,11 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
     private long mCompletedCount;
 
     /**
+     * 跳过的文件数量
+     */
+    private long mSkipedCount;
+
+    /**
      * 以DocumentProvider操作文件时的备份文件根目录对象
      */
     private DocumentFile mRootDirFile;
@@ -76,8 +82,16 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
      */
     private boolean isSAFUseing;
 
+    /**
+     * 是否跳过已存在的文件
+     */
+    private boolean isSkipExistedFiles;
+
     public BackupTask() {
         this.mCopyProgress = new CopyProgress();
+        this.isSkipExistedFiles = PreferenceManager.getDefaultSharedPreferences(
+                ApplicationContext.getInstance()).getBoolean(Constants.KEY_PREFERENCES_SKIP_EXISTED_FILES,
+                Constants.VALUE_PREFERENCES_SKIP_EXISTED_FILES);
     }
 
     @Override
@@ -132,6 +146,9 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
                         break;
                     }
                     isCheckCount = false;
+                    if (isCancelled()) {
+                        break;
+                    }
                 }
             }
             Log.i(TAG, "doInBackground: " + mFileTotalCount);
@@ -156,6 +173,9 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
      */
     private long iterateFileTree(FileTreeNode fileTreeNode, DocumentFile documentFile, String rootTargetDir, boolean isStatistics) {
         long filesCount = 0;
+        if (isCancelled()){
+            return filesCount;
+        }
         if (null != fileTreeNode.path) {
             File file = new File(fileTreeNode.path);
             //判断源文件、文件夹是否存在
@@ -288,6 +308,7 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
         long stratTime = System.currentTimeMillis();
         try {
             inputStream = new FileInputStream(path);
+            boolean isSkip = false;
             if (isSAFUseing) {
                 File file = new File(path);
                 String[] paths = file.getParentFile().getAbsolutePath().split(File.separator);
@@ -316,7 +337,11 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
                 Log.i(TAG, "measure targetDir cost: " + (System.currentTimeMillis() - stratTime));
                 stratTime = System.currentTimeMillis();
                 DocumentFile targetFile = targetDir.findFile(file.getName());
-                if (null != targetFile && targetFile.exists()) {
+                //判断是否跳过
+                if (isSkipExistedFiles && com.yifan.sdcardbackuper.utils.FileUtils.compareTwoFiles(file, targetFile)) {
+                    isSkip = true;
+                    mSkipedCount++;
+                } else if (null != targetFile && targetFile.exists()) {//删除目标路径存在的文件
                     targetFile.delete();
                 }
                 targetFile = targetDir.createFile(com.yifan.sdcardbackuper.utils.FileUtils.getMimeType(new File(path)), file.getName());
@@ -324,22 +349,28 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
                 Log.i(TAG, "create targetDir and getOpt cost: " + (System.currentTimeMillis() - stratTime));
             } else {
                 File file = new File(new StringBuilder().append(targetPath).append(File.separator).append(path).toString());
-                if (file.exists()) {
+                if (isSkipExistedFiles && com.yifan.sdcardbackuper.utils.FileUtils.compareTwoFiles(new File(path), file)) {
+                    isSkip = true;
+                    mSkipedCount++;
+                } else if (null != file && file.exists()) {
                     file.delete();
                 }
                 file.createNewFile();
                 outputStream = new FileOutputStream(file);
             }
             stratTime = System.currentTimeMillis();
-            byte bt[] = new byte[1024];
-            int c;
-            while ((c = inputStream.read(bt)) > 0) {
-                outputStream.write(bt, 0, c);
+            if (!isSkip) {
+                byte bt[] = new byte[1024];
+                int c;
+                while ((c = inputStream.read(bt)) > 0) {
+                    outputStream.write(bt, 0, c);
+                }
             }
             Log.i(TAG, "copy to targetDir cost: " + (System.currentTimeMillis() - stratTime));
             mCopyProgress.fileListCopy.add(path);
             mCompletedCount++;
             mCopyProgress.completedCount = mCompletedCount;
+            mCopyProgress.skipedCount = mSkipedCount;
             publishProgress(mCopyProgress);
         } catch (Exception e) {
             e.printStackTrace();
