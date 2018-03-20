@@ -2,9 +2,7 @@ package com.yifan.preferencesadapter;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,21 +11,19 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.yifan.preferencesadapter.holder.BasePrefHolder;
-import com.yifan.preferencesadapter.model.Preferences;
-import com.yifan.preferencesadapter.model.PreferencesCheckGroup;
-import com.yifan.preferencesadapter.model.PreferencesGroup;
-import com.yifan.preferencesadapter.model.PreserencesValueType;
-import com.yifan.preferencesadapter.model.Type;
-import com.yifan.preferencesadapter.widget.CheckGroupItem;
-import com.yifan.utils.base.widget.BaseRecyclerAdapter;
-import com.yifan.utils.base.widget.BaseRecyclerHolder;
-import com.yifan.utils.utils.Constant;
+ import com.yifan.preferencesadapter.holder.BasePrefHolder;
+ import com.yifan.preferencesadapter.model.Preferences;
+ import com.yifan.preferencesadapter.model.PreferencesCheckGroup;
+ import com.yifan.preferencesadapter.model.PreferencesGroup;
+ import com.yifan.preferencesadapter.model.PreserencesValueType;
+ import com.yifan.preferencesadapter.widget.CheckGroupItem;
+ import com.yifan.utils.base.widget.BaseRecyclerAdapter;
+ import com.yifan.utils.base.widget.BaseRecyclerHolder;
 
-import java.util.ArrayList;
-import java.util.List;
+ import java.util.ArrayList;
+ import java.util.List;
 
-/**
+ /**
  * 设置项数据适配器
  *
  * Created by yifan on 2016/12/22.

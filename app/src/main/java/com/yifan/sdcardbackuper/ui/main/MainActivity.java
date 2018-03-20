@@ -32,7 +32,6 @@ import android.widget.Toast;
 import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
-import com.yifan.sdcardbackuper.model.FileTree;
 import com.yifan.sdcardbackuper.task.BackupTask;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;

@@ -1,1 +1,1 @@
-include ':app', ':libraries:utils', ':libraries:preferencesadapter'
+include ':app', ':libraries:utils', ':libraries:preferencesadapter', ':libraries:fileiterator'
