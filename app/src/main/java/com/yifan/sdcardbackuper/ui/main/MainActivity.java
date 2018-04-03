@@ -1,6 +1,7 @@
 package com.yifan.sdcardbackuper.ui.main;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -33,6 +34,7 @@ import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
 import com.yifan.sdcardbackuper.task.BackupTask;
+import com.yifan.sdcardbackuper.task.backup.BackupChannelTask;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.setting.SettingFragment;
@@ -94,7 +96,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
     /**
      * 复制文件 异步任务
      */
-    private BackupTask mCopyTask;
+    private BackupChannelTask mCopyTask;
 
     /**
      * 复制 异步任务监听
@@ -124,6 +126,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
 
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     public void initView() {
         super.initView();
@@ -272,7 +275,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                                         if (null == mCopyListener) {
                                             mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
                                         }
-                                        mCopyTask = new BackupTask();
+                                        mCopyTask = new BackupChannelTask();
                                         mCopyTask.setOnAsyncListener(mCopyListener);
                                         mCopyTask.asyncExecute(mTargetPath,
                                                 mViewPager.getCurrentItem() == 0 ?
@@ -330,6 +333,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
     public static class OnCopyListener implements BaseAsyncTask.OnAsyncListener {
 
         private WeakReference<MainActivity> mActivity;
+        private long startTime;
 
         public OnCopyListener(WeakReference<MainActivity> reference) {
             this.mActivity = reference;
@@ -345,6 +349,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                             String.valueOf(((CopyProgress) data).totalFileCount - ((CopyProgress) data).completedCount))
                             , Toast.LENGTH_SHORT).show();
                 }
+
             }
         }
 
@@ -362,6 +367,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
         @Override
         public void onAsyncStart() {
             if (null != mActivity.get()) {
+                startTime = System.currentTimeMillis();
                 mActivity.get().createLoadingdialog(ResourcesUtils.getString(R.string.start_to_statisitcs_file_count), false, false);
             }
         }
@@ -429,7 +435,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                 if (null == mCopyListener) {
                     mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
                 }
-                mCopyTask = new BackupTask();
+                mCopyTask = new BackupChannelTask();
                 mCopyTask.setOnAsyncListener(mCopyListener);
                 mCopyTask.asyncExecute(mTargetPath,
                         mViewPager.getCurrentItem() == 0 ?

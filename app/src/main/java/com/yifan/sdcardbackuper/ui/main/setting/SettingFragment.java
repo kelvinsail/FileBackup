@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.View;
 
 import com.yifan.preferencesadapter.PreferencesAdapter;
+import com.yifan.preferencesadapter.holder.BasePrefHolder;
 import com.yifan.preferencesadapter.model.Preferences;
 import com.yifan.preferencesadapter.model.PreferencesCheckGroup;
 import com.yifan.preferencesadapter.model.PreferencesGroup;
@@ -139,7 +140,21 @@ public class SettingFragment extends TitleBarFragment implements BaseRecyclerAda
         Log.i(TAG, "onItemChecked: " + mAdapter.getItem(position).getTitle() + " , " + isChecked);
         Preferences preferences = mAdapter.getItem(position);
         if (null != preferences && null != mAdapter.getPreferences()) {
+            //判断是否为设置参数集合，如果是，则取出子序号
+            if (preferences.getType() == Type.group) {
+                Bundle data = (Bundle) view.getTag();
+                //判断是否为空，一般不会为空
+                if (null != data) {
+                    //取出子序号
+                    int subPosition = data.getInt(BasePrefHolder.POSITION_SUB);
+                    //判断子序号是否有效，根据子序号取出真正的参数体
+                    if (subPosition >= 0) {
+                        preferences = ((PreferencesGroup) preferences).getItems().get(subPosition);
+                    }
+                }
+            }
             mAdapter.getPreferences().edit().putBoolean(preferences.getPreferencesKey(), isChecked).commit();
+
         }
     }
 

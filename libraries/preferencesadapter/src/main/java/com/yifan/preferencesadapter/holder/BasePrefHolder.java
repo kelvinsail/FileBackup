@@ -42,7 +42,7 @@ public abstract class BasePrefHolder extends BaseRecyclerHolder {
      * @param position
      */
     public void setSubPosition(int position) {
-        setPosition(itemView, position);
+        setSubPosition(itemView, position);
     }
 
     /**

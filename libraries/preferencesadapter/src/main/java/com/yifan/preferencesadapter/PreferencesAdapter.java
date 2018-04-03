@@ -11,19 +11,19 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
- import com.yifan.preferencesadapter.holder.BasePrefHolder;
- import com.yifan.preferencesadapter.model.Preferences;
- import com.yifan.preferencesadapter.model.PreferencesCheckGroup;
- import com.yifan.preferencesadapter.model.PreferencesGroup;
- import com.yifan.preferencesadapter.model.PreserencesValueType;
- import com.yifan.preferencesadapter.widget.CheckGroupItem;
- import com.yifan.utils.base.widget.BaseRecyclerAdapter;
- import com.yifan.utils.base.widget.BaseRecyclerHolder;
+import com.yifan.preferencesadapter.holder.BasePrefHolder;
+import com.yifan.preferencesadapter.model.Preferences;
+import com.yifan.preferencesadapter.model.PreferencesCheckGroup;
+import com.yifan.preferencesadapter.model.PreferencesGroup;
+import com.yifan.preferencesadapter.model.PreserencesValueType;
+import com.yifan.preferencesadapter.widget.CheckGroupItem;
+import com.yifan.utils.base.widget.BaseRecyclerAdapter;
+import com.yifan.utils.base.widget.BaseRecyclerHolder;
 
- import java.util.ArrayList;
- import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
- /**
+/**
  * 设置项数据适配器
  *
  * Created by yifan on 2016/12/22.
@@ -230,21 +230,25 @@ public class PreferencesAdapter extends BaseRecyclerAdapter<BasePrefHolder>
             if (preferences instanceof PreferencesGroup) {
                 for (int i = 0; i < ((PreferencesGroup) preferences).getItems().size(); i++) {
                     Preferences item = ((PreferencesGroup) preferences).getItems().get(i);
+                    BasePrefHolder holder = null;
                     switch (item.getType()) {
-                        case normal:
-                            NormalHolder normalHolder = (NormalHolder) getNormalHolder(null);
-                            normalHolder.setData(position, item);
-                            normalHolder.setSubPosition(i);
-                            ((ViewGroup) itemView).addView(normalHolder.itemView);
+                        case normal://普通选项
+                            holder = getNormalHolder(null);
+                            holder.setData(position, item);
+                            holder.setSubPosition(i);
+                            ((ViewGroup) itemView).addView(holder.itemView);
                             break;
-                        case switchable:
-                            SwitchHolder switchableHolder = (SwitchHolder) getSwitchableHolder(null);
-                            switchableHolder.setData(0, item);
-                            switchableHolder.setSubPosition(i);
-                            ((ViewGroup) itemView).addView(switchableHolder.itemView);
+                        case switchable://开关选项
+                            holder = getSwitchableHolder(null);
                             break;
                         default:
                             break;
+                    }
+                    if (null != holder) {
+                        holder.setData(position, item);
+                        //设置子序号
+                        holder.setSubPosition(i);
+                        ((ViewGroup) itemView).addView(holder.itemView);
                     }
                 }
             }
