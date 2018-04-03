@@ -1,4 +1,4 @@
-package com.yifan.sdcardbackuper.task.backup;
+package com.yifan.sdcardbackuper.task;
 
 import android.preference.PreferenceManager;
 import android.support.v4.provider.DocumentFile;
