@@ -24,11 +24,11 @@ public class BackupTask implements Runnable {
     /**
      * 备份方式 - 文件
      */
-    public static final String BACKUP_TYPE_FILE = "files";
+    public static final int BACKUP_TYPE_FILE = 0x101;
     /**
      * 备份方式 - 图片
      */
-    public static final String BACKUP_TYPE_PHOTO = "photoes";
+    public static final int BACKUP_TYPE_PHOTO = 0x102;
 
     /**
      * 目标路径
@@ -72,13 +72,15 @@ public class BackupTask implements Runnable {
     public void run() {
         //根据类型取出相应数据
         FileTree fileTree;
-        if (BACKUP_TYPE_PHOTO.equals(mType)) {
+        //判断复制类型，相册复制与文件复制厨房存放数组分开
+        if (BACKUP_TYPE_PHOTO == mType) {
             fileTree = PhotoCopyManager.getInstance().getFileTree();
         } else {
             fileTree = FileCopyManager.getInstance().getFileTree();
         }
         // 确定路径备份目标文件夹是否已建立
         String targetPath = null;
+        //判断是否使用SAF框架
         if (isSAFUseing) {
             DocumentFile targetFile = mRootDirFile.findFile(Constants.FILE_BACKUP_ROOT_NAME);
             if (null == targetFile || !targetFile.exists()) {
@@ -105,9 +107,6 @@ public class BackupTask implements Runnable {
                     break;
                 }
                 isCheckCount = false;
-//                if (isCancelled()) {
-//                    break;
-//                }
             }
         }
         Log.i(TAG, "doInBackground: " + mFileTotalCount);
@@ -116,15 +115,16 @@ public class BackupTask implements Runnable {
     /**
      * 遍历文件树
      *
-     * @param node
-     * @param mRootDirFile
-     * @param targetPath
-     * @param isCheckCount
+     * @param node 节点对象
+     * @param mRootDirFile SAF获取到的目标文件根路径
+     * @param targetPath 普通复制方式，目标文件夹路径
+     * @param isCheckCount 是否为检查数量
      * @return
      */
     private long iterateFileTree(FileTreeNode node, DocumentFile mRootDirFile, String targetPath, boolean isCheckCount) {
         if (null != node) {
-            if (node.nodes.size()>0){//文件夹，含有子文件
+            if (node.isSelectedDir || node.nodes.size()>0){//文件夹，含有子文件
+               long count = 0;
 
             }
         }

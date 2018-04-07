@@ -33,8 +33,9 @@ import android.widget.Toast;
 import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
-import com.yifan.sdcardbackuper.task.BackupTask;
 import com.yifan.sdcardbackuper.task.BackupChannelTask;
+import com.yifan.sdcardbackuper.task.backup.BackupTask;
+import com.yifan.sdcardbackuper.task.backup.ThreadManager;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.setting.SettingFragment;
@@ -265,24 +266,25 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (null != mTargetPath) {
-//                                if (mViewPager.getCurrentItem() == 0) {
-//                                } else if (mViewPager.getCurrentItem() == 1) {
-                                    if (mPoints.size() > 0) {
-                                        if (null != mCopyTask) {
-                                            mCopyTask.cancel(true);
-                                            mCopyTask = null;
-                                        }
-                                        if (null == mCopyListener) {
-                                            mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
-                                        }
-                                        mCopyTask = new BackupChannelTask();
-                                        mCopyTask.setOnAsyncListener(mCopyListener);
-                                        mCopyTask.asyncExecute(mTargetPath,
-                                                mViewPager.getCurrentItem() == 0 ?
+//                                    if (mPoints.size() > 0) {
+//                                        if (null != mCopyTask) {
+//                                            mCopyTask.cancel(true);
+//                                            mCopyTask = null;
+//                                        }
+//                                        if (null == mCopyListener) {
+//                                            mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
+//                                        }
+//                                        mCopyTask = new BackupChannelTask();
+//                                        mCopyTask.setOnAsyncListener(mCopyListener);
+//                                        mCopyTask.asyncExecute(mTargetPath,
+//                                                mViewPager.getCurrentItem() == 0 ?
+//                                                        BackupTask.BACKUP_TYPE_PHOTO :
+//                                                        BackupTask.BACKUP_TYPE_FILE);
+//                                    }
+                                    BackupTask task = new BackupTask(mTargetPath,mViewPager.getCurrentItem() == 0 ?
                                                         BackupTask.BACKUP_TYPE_PHOTO :
-                                                        BackupTask.BACKUP_TYPE_FILE);
-                                    }
-//                                }
+                                                        BackupTask.BACKUP_TYPE_FILE,null);
+                                    ThreadManager.getDefault().excuteAsync(task);
                                 }
                             }
                         });
@@ -427,20 +429,24 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                     Toast.makeText(this, R.string.unable_copy_to_storage, Toast.LENGTH_SHORT).show();
                     return;
                 }
-                //开启异步任务 备份文件
-                if (null != mCopyTask) {
-                    mCopyTask.cancel(true);
-                    mCopyTask = null;
-                }
-                if (null == mCopyListener) {
-                    mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
-                }
-                mCopyTask = new BackupChannelTask();
-                mCopyTask.setOnAsyncListener(mCopyListener);
-                mCopyTask.asyncExecute(mTargetPath,
-                        mViewPager.getCurrentItem() == 0 ?
-                                BackupTask.BACKUP_TYPE_PHOTO :
-                                BackupTask.BACKUP_TYPE_FILE, pickedDir);
+//                //开启异步任务 备份文件
+//                if (null != mCopyTask) {
+//                    mCopyTask.cancel(true);
+//                    mCopyTask = null;
+//                }
+//                if (null == mCopyListener) {
+//                    mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
+//                }
+//                mCopyTask = new BackupChannelTask();
+//                mCopyTask.setOnAsyncListener(mCopyListener);
+//                mCopyTask.asyncExecute(mTargetPath,
+//                        mViewPager.getCurrentItem() == 0 ?
+//                                BackupTask.BACKUP_TYPE_PHOTO :
+//                                BackupTask.BACKUP_TYPE_FILE, pickedDir);
+                BackupTask task = new BackupTask(mTargetPath,mViewPager.getCurrentItem() == 0 ?
+                        BackupTask.BACKUP_TYPE_PHOTO :
+                        BackupTask.BACKUP_TYPE_FILE,pickedDir);
+                ThreadManager.getDefault().excuteAsync(task);
             }
         } else {//获取失败
             Toast.makeText(this, R.string.cancel_copy, Toast.LENGTH_SHORT).show();
