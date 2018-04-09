@@ -70,6 +70,7 @@ public class BackupTask implements Runnable {
 
     @Override
     public void run() {
+        Log.i(TAG, "run: ");
         //根据类型取出相应数据
         FileTree fileTree;
         //判断复制类型，相册复制与文件复制厨房存放数组分开
@@ -115,19 +116,60 @@ public class BackupTask implements Runnable {
     /**
      * 遍历文件树
      *
-     * @param node 节点对象
-     * @param mRootDirFile SAF获取到的目标文件根路径
-     * @param targetPath 普通复制方式，目标文件夹路径
-     * @param isCheckCount 是否为检查数量
+     * @param fileTreeNode 节点对象
+     * @param documentFile SAF获取到的目标文件根路径
+     * @param rootTargetDir 普通复制方式，目标文件夹路径
+     * @param isStatistics 是否为检查数量
      * @return
      */
-    private long iterateFileTree(FileTreeNode node, DocumentFile mRootDirFile, String targetPath, boolean isCheckCount) {
-        if (null != node) {
-            if (node.isSelectedDir || node.nodes.size()>0){//文件夹，含有子文件
-               long count = 0;
-
+    private long iterateFileTree(FileTreeNode fileTreeNode, DocumentFile documentFile, String rootTargetDir, boolean isStatistics) {
+        long count = 0;
+        if (null != fileTreeNode) {
+            if (null != fileTreeNode.nodes &&fileTreeNode.nodes.size()>0) {//文件夹，可能含有子文件
+                if (fileTreeNode.nodes.size() > 0) {
+                    for (FileTreeNode subNode : fileTreeNode.nodes) {
+                        count += iterateFileTree(subNode, documentFile, rootTargetDir, isCheckCount);
+                    }
+                }
+            } else if (fileTreeNode.isSelectedDir){//选中整个文件夹
+                File dir = new File(fileTreeNode.path);
+                String[] fileNames = dir.list();
+                if (null != fileNames && fileNames.length > 0) {
+                    for (String name : fileNames) {
+                        File temp = new File(new StringBuilder(fileTreeNode.path).append(File.separator).append(name).toString());
+                        if (temp.exists()) {
+                            if (temp.isDirectory()) {
+                                FileTreeNode childNode = new FileTreeNode();
+                                childNode.path = temp.getAbsolutePath();
+                                childNode.name = temp.getName();
+                                childNode.isSelectedDir = true;
+                                childNode.parent = fileTreeNode;
+                                fileTreeNode.nodes.add(childNode);
+                                count += iterateFileTree(childNode, documentFile, rootTargetDir, isStatistics);
+                            } else {
+                                if (isStatistics) {
+                                    FileTreeNode childNode = new FileTreeNode();
+                                    childNode.path = temp.getAbsolutePath();
+                                    childNode.name = temp.getName();
+                                    childNode.isSelectedDir = true;
+                                    childNode.parent = fileTreeNode;
+                                    fileTreeNode.nodes.add(childNode);
+                                }
+                                if (copyFile(temp.getAbsolutePath(), rootTargetDir, documentFile, isStatistics)) {
+                                   count++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }else{//文件
+                count =  1;
             }
         }
-        return 0;
+        return count;
+    }
+
+    private boolean copyFile(String absolutePath, String rootTargetDir, DocumentFile documentFile, boolean isStatistics) {
+        return true;
     }
 }
