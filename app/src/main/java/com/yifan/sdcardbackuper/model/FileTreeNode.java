@@ -55,6 +55,13 @@ public class FileTreeNode {
         this.nodes = new ArrayList<>();
     }
 
+    public FileTreeNode(String name, String path, FileTreeNode parent, boolean isSelectedDir) {
+        this.name = name;
+        this.path = path;
+        this.parent = parent;
+        this.isSelectedDir = isSelectedDir;
+    }
+
     /**
      * 添加一个节点
      *
