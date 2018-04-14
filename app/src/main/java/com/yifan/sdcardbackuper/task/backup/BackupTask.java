@@ -139,20 +139,12 @@ public class BackupTask implements Runnable {
                         File temp = new File(new StringBuilder(fileTreeNode.path).append(File.separator).append(name).toString());
                         if (temp.exists()) {
                             if (temp.isDirectory()) {
-                                FileTreeNode childNode = new FileTreeNode();
-                                childNode.path = temp.getAbsolutePath();
-                                childNode.name = temp.getName();
-                                childNode.isSelectedDir = true;
-                                childNode.parent = fileTreeNode;
+                                FileTreeNode childNode = new FileTreeNode(temp.getName(),temp.getAbsolutePath(),fileTreeNode,true);
                                 fileTreeNode.nodes.add(childNode);
                                 count += iterateFileTree(childNode, documentFile, rootTargetDir, isStatistics);
                             } else {
                                 if (isStatistics) {
-                                    FileTreeNode childNode = new FileTreeNode();
-                                    childNode.path = temp.getAbsolutePath();
-                                    childNode.name = temp.getName();
-                                    childNode.isSelectedDir = true;
-                                    childNode.parent = fileTreeNode;
+                                    FileTreeNode childNode = new FileTreeNode(temp.getName(),temp.getAbsolutePath(),fileTreeNode,true);
                                     fileTreeNode.nodes.add(childNode);
                                 }
                                 if (copyFile(temp.getAbsolutePath(), rootTargetDir, documentFile, isStatistics)) {
