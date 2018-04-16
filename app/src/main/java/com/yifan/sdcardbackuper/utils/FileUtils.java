@@ -2,6 +2,7 @@ package com.yifan.sdcardbackuper.utils;
 
 import android.media.MediaMetadataRetriever;
 import android.support.v4.provider.DocumentFile;
+import android.text.TextUtils;
 import android.webkit.MimeTypeMap;
 
 import java.io.File;
@@ -12,6 +13,8 @@ import java.math.BigDecimal;
 import java.util.Locale;
 
 /**
+ * 文件工具类
+ *
  * Created by yifan on 2016/11/17.
  */
 public class FileUtils {
@@ -144,4 +147,51 @@ public class FileUtils {
         }
         return false;
     }
+
+    /**
+     * 创建文件夹
+     *
+     * @param path         路径
+     * @param isStatistics 是否统计，true:不创建；false:创建
+     */
+    public static void createDir(String path, DocumentFile documentFile, boolean isStatistics) {
+        if (isStatistics || null == documentFile) {
+            return;
+        }
+        if (null != documentFile) {
+            String[] names = path.split(File.separator);
+            DocumentFile targetDir = documentFile;
+            for (String name : names) {
+                if (!TextUtils.isEmpty(name)) {
+                    DocumentFile temp = targetDir.findFile(name);
+                    DocumentFile tempfirstUp = targetDir.findFile(name.substring(0, 1).toUpperCase() + name.substring(1));
+                    DocumentFile tempAllUp = targetDir.findFile(name.toUpperCase());
+                    DocumentFile tempAllLow = targetDir.findFile(name.toLowerCase());
+                    boolean isExisted = (null != temp && temp.exists())
+                            || (null != tempfirstUp && tempfirstUp.exists())
+                            || (null != tempAllUp && tempAllUp.exists())
+                            || (null != tempAllLow && tempAllLow.exists());
+                    if (!isExisted) {
+                        targetDir = targetDir.createDirectory(name);
+                    } else {
+                        if (null != temp) {
+                            targetDir = temp;
+                        } else if (null != tempfirstUp) {
+                            targetDir = tempfirstUp;
+                        } else if (null != tempAllUp) {
+                            targetDir = tempAllUp;
+                        } else if (null != tempAllLow) {
+                            targetDir = tempAllLow;
+                        }
+                    }
+                }
+            }
+        } else {
+            File file = new File(path);
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+        }
+    }
+
 }

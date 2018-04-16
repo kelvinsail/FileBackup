@@ -34,7 +34,9 @@ import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
 import com.yifan.sdcardbackuper.task.BackupChannelTask;
+import com.yifan.sdcardbackuper.task.backup.Backup;
 import com.yifan.sdcardbackuper.task.backup.BackupTask;
+import com.yifan.sdcardbackuper.task.backup.TaskStatus;
 import com.yifan.sdcardbackuper.task.backup.ThreadManager;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
@@ -50,8 +52,13 @@ import com.yifan.utils.base.BaseFragment;
 import com.yifan.utils.base.TitleBarActivity;
 import com.yifan.utils.utils.ResourcesUtils;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.EventListener;
 import java.util.List;
 
 /**
@@ -97,12 +104,7 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
     /**
      * 复制文件 异步任务
      */
-    private BackupChannelTask mCopyTask;
-
-    /**
-     * 复制 异步任务监听
-     */
-    private OnCopyListener mCopyListener;
+    private BackupTask mBackupTask;
 
     /**
      * 所选的文件保存挂载点路径
@@ -266,25 +268,17 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (null != mTargetPath) {
-//                                    if (mPoints.size() > 0) {
-//                                        if (null != mCopyTask) {
-//                                            mCopyTask.cancel(true);
-//                                            mCopyTask = null;
-//                                        }
-//                                        if (null == mCopyListener) {
-//                                            mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
-//                                        }
-//                                        mCopyTask = new BackupChannelTask();
-//                                        mCopyTask.setOnAsyncListener(mCopyListener);
-//                                        mCopyTask.asyncExecute(mTargetPath,
-//                                                mViewPager.getCurrentItem() == 0 ?
-//                                                        BackupTask.BACKUP_TYPE_PHOTO :
-//                                                        BackupTask.BACKUP_TYPE_FILE);
-//                                    }
-                                    BackupTask task = new BackupTask(mTargetPath,mViewPager.getCurrentItem() == 0 ?
-                                                        BackupTask.BACKUP_TYPE_PHOTO :
-                                                        BackupTask.BACKUP_TYPE_FILE,null);
-                                    ThreadManager.getDefault().excuteAsync(task);
+                                    if (mPoints.size() > 0) {
+                                        if (null != mBackupTask) {
+                                            mBackupTask.cancel();
+                                            mBackupTask = null;
+                                        }
+                                        mBackupTask = new BackupTask(new Backup(mTargetPath, mViewPager.getCurrentItem() == 0 ?
+                                                Backup.BACKUP_TYPE_PHOTO :
+                                                Backup.BACKUP_TYPE_FILE, null));
+                                        ThreadManager.getDefault().excuteAsync(mBackupTask);
+                                    }
+
                                 }
                             }
                         });
@@ -302,6 +296,18 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                 }
                 break;
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        EventBus.getDefault().register(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        EventBus.getDefault().unregister(this);
     }
 
     /**
@@ -326,76 +332,6 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
         @Override
         public int getCount() {
             return mFragments.size();
-        }
-    }
-
-    /**
-     * 文件复制 异步任务监听
-     */
-    public static class OnCopyListener implements BaseAsyncTask.OnAsyncListener {
-
-        private WeakReference<MainActivity> mActivity;
-        private long startTime;
-
-        public OnCopyListener(WeakReference<MainActivity> reference) {
-            this.mActivity = reference;
-        }
-
-        @Override
-        public void onAsyncSuccess(Object data) {
-            if (null != mActivity.get() && null != data && data instanceof CopyProgress) {
-                if (((CopyProgress) data).completedCount == ((CopyProgress) data).totalFileCount) {
-                    Toast.makeText(mActivity.get(), R.string.end_copy, Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(mActivity.get(), ResourcesUtils.getString(R.string.end_copy_but_some_fail,
-                            String.valueOf(((CopyProgress) data).totalFileCount - ((CopyProgress) data).completedCount))
-                            , Toast.LENGTH_SHORT).show();
-                }
-
-            }
-        }
-
-        @Override
-        public void onAsyncFail() {
-            if (null != mActivity.get()) {
-                Toast.makeText(mActivity.get(), R.string.end_copy_but_fail, Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        @Override
-        public void onAsyncCancelled() {
-        }
-
-        @Override
-        public void onAsyncStart() {
-            if (null != mActivity.get()) {
-                startTime = System.currentTimeMillis();
-                mActivity.get().createLoadingdialog(ResourcesUtils.getString(R.string.start_to_statisitcs_file_count), false, false);
-            }
-        }
-
-        @Override
-        public void onAsyncCompleted() {
-            if (null != mActivity.get()) {
-                mActivity.get().dissmissLoadingDialog();
-            }
-        }
-
-        /**
-         * 复制进度
-         *
-         * @param copyProgresses
-         */
-        public void onUpdateProgress(CopyProgress... copyProgresses) {
-            Log.i(TAG, "onUpdateProgress: " + copyProgresses[0].completedCount + " , " + copyProgresses[0].totalFileCount);
-            if (null != mActivity.get()) {
-                StringBuilder builder = new StringBuilder(ResourcesUtils.getString(R.string.start_to_copy_file,
-                        copyProgresses[0].completedCount - copyProgresses[0].skipedCount, copyProgresses[0].totalFileCount));
-                if (copyProgresses[0].skipedCount > 0) {
-                    builder.append(ResourcesUtils.getString(R.string.start_to_copy_file_skip_count, copyProgresses[0].skipedCount));
-                }
-                mActivity.get().createLoadingdialog(builder.toString(), false, false);
-            }
         }
     }
 
@@ -429,28 +365,61 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                     Toast.makeText(this, R.string.unable_copy_to_storage, Toast.LENGTH_SHORT).show();
                     return;
                 }
-//                //开启异步任务 备份文件
-//                if (null != mCopyTask) {
-//                    mCopyTask.cancel(true);
-//                    mCopyTask = null;
-//                }
-//                if (null == mCopyListener) {
-//                    mCopyListener = new OnCopyListener(new WeakReference<MainActivity>(MainActivity.this));
-//                }
-//                mCopyTask = new BackupChannelTask();
-//                mCopyTask.setOnAsyncListener(mCopyListener);
-//                mCopyTask.asyncExecute(mTargetPath,
-//                        mViewPager.getCurrentItem() == 0 ?
-//                                BackupTask.BACKUP_TYPE_PHOTO :
-//                                BackupTask.BACKUP_TYPE_FILE, pickedDir);
-                BackupTask task = new BackupTask(mTargetPath,mViewPager.getCurrentItem() == 0 ?
-                        BackupTask.BACKUP_TYPE_PHOTO :
-                        BackupTask.BACKUP_TYPE_FILE,pickedDir);
-                ThreadManager.getDefault().excuteAsync(task);
+                //开启异步任务 备份文件
+                if (null != mBackupTask) {
+                    mBackupTask.cancel();
+                    mBackupTask = null;
+                }
+                mBackupTask = new BackupTask(new Backup(mTargetPath, mViewPager.getCurrentItem() == 0 ?
+                        Backup.BACKUP_TYPE_PHOTO :
+                        Backup.BACKUP_TYPE_FILE, pickedDir));
+                ThreadManager.getDefault().excuteAsync(mBackupTask);
             }
         } else {//获取失败
             Toast.makeText(this, R.string.cancel_copy, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onAsyncTask(TaskStatus status) {
+        switch (status.status) {
+            case START:
+                createLoadingdialog(ResourcesUtils.getString(R.string.start_to_statisitcs_file_count), false, false);
+                break;
+            case FAIL:
+                Toast.makeText(this, R.string.end_copy_but_fail, Toast.LENGTH_SHORT).show();
+                break;
+            case COMPLETED:
+                dissmissLoadingDialog();
+                break;
+            case SUCCESS:
+                if (null != status.copyProgresses) {
+                    if (status.copyProgresses.completedCount == status.copyProgresses.totalFileCount) {
+                        Toast.makeText(this, R.string.end_copy, Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, ResourcesUtils.getString(R.string.end_copy_but_some_fail,
+                                String.valueOf(status.copyProgresses.totalFileCount - status.copyProgresses.completedCount))
+                                , Toast.LENGTH_SHORT).show();
+                    }
+
+                }
+                break;
+        }
+    }
+
+    /**
+     * 复制进度
+     *
+     * @param copyProgress
+     */
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateProgress(CopyProgress copyProgress) {
+        StringBuilder builder = new StringBuilder(ResourcesUtils.getString(R.string.start_to_copy_file,
+                copyProgress.completedCount - copyProgress.skipedCount, copyProgress.totalFileCount));
+        if (copyProgress.skipedCount > 0) {
+            builder.append(ResourcesUtils.getString(R.string.start_to_copy_file_skip_count, copyProgress.skipedCount));
+        }
+        createLoadingdialog(builder.toString(), false, false);
     }
 
 }

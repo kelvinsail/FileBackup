@@ -396,9 +396,9 @@ public class BackupChannelTask extends BaseAsyncTask<Object, CopyProgress, CopyP
     @Override
     protected void onProgressUpdate(CopyProgress... values) {
         super.onProgressUpdate(values);
-        if (null != getOnAsyncListener() && getOnAsyncListener() instanceof MainActivity.OnCopyListener) {
-            ((MainActivity.OnCopyListener) getOnAsyncListener()).onUpdateProgress(values);
-        }
+//        if (null != getOnAsyncListener() && getOnAsyncListener() instanceof MainActivity.OnCopyListener) {
+//            ((MainActivity.OnCopyListener) getOnAsyncListener()).onUpdateProgress(values);
+//        }
     }
 
     /**

@@ -396,8 +396,8 @@ public class BackupTask extends BaseAsyncTask<Object, CopyProgress, CopyProgress
     @Override
     protected void onProgressUpdate(CopyProgress... values) {
         super.onProgressUpdate(values);
-        if (null != getOnAsyncListener() && getOnAsyncListener() instanceof MainActivity.OnCopyListener) {
-            ((MainActivity.OnCopyListener) getOnAsyncListener()).onUpdateProgress(values);
-        }
+//        if (null != getOnAsyncListener() && getOnAsyncListener() instanceof MainActivity.OnCopyListener) {
+//            ((MainActivity.OnCopyListener) getOnAsyncListener()).onUpdateProgress(values);
+//        }
     }
 }
