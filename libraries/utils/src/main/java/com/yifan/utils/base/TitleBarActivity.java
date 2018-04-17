@@ -1,5 +1,6 @@
 package com.yifan.utils.base;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
@@ -165,6 +166,7 @@ public abstract class TitleBarActivity extends BaseActivity implements TitleImpl
      * @param isToolBarLinkage
      * @return
      */
+    @SuppressLint("RestrictedApi")
     private View initContentView(View v, @LayoutRes int layoutID, int styleID, boolean isToolBarLinkage) {
         //初始化布局加载适配器
         mLayoutInflater = getLayoutInflater();
@@ -356,13 +358,12 @@ public abstract class TitleBarActivity extends BaseActivity implements TitleImpl
 
     @Override
     public synchronized void createLoadingdialog(String message, boolean canelable, boolean touchOutsideCancelable, boolean isFullScreen) {
-        Log.i(getTAG(), "createLoadingdialog: " + message);
         if (!isActived()) {
             return;
         }
         if (isFullScreen) {
             if (null != mLoadingDialogFragment) {
-                Log.i(getTAG(), "createLoadingdialog: " + mLoadingDialogFragment);
+//                Log.i(getTAG(), "createLoadingdialog: " + mLoadingDialogFragment);
                 mLoadingDialogFragment.setMessage(message);
                 mLoadingDialogFragment.setCancelable(canelable);
                 mLoadingDialogFragment.setTouchOutsideCancelable(touchOutsideCancelable);
@@ -382,7 +383,6 @@ public abstract class TitleBarActivity extends BaseActivity implements TitleImpl
 
     @Override
     public synchronized void dissmissLoadingDialog() {
-        Log.i(getTAG(), "dissmissLoadingDialog: ");
         if (!isActived()) {
             return;
         }

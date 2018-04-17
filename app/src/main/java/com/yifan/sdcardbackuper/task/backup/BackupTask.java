@@ -97,18 +97,17 @@ public class BackupTask extends Thread {
             }
             targetPath = targetDir.getAbsolutePath();
         }
-        // 第一遍先检查文件数量
+        // 先检查文件数量，统计出所有文件及其路径，再复制
         if (fileTree.nodes.size() > 0) {
             isStatistics = true;
-            while (true) {
-                // 开始遍历文件树
-                for (FileTreeNode node : fileTree.nodes) {
-                    iterateFileTree(node, this.mBackup.rootDirFile, targetPath, isStatistics);
-                }
-                if (!isStatistics) {
-                    break;
-                }
-                isStatistics = false;
+            // 开始遍历文件树，统计数量
+            for (FileTreeNode node : fileTree.nodes) {
+                iterateFileTree(node, this.mBackup.rootDirFile, targetPath);
+            }
+            //开始复制备份文件
+            for (String filePath : PROGRESS.fileListStaticisces) {
+                Log.i(TAG, "foreach: " + filePath);
+                copyFile(filePath, mBackup.rootDirFile.getUri().getPath(), mBackup.rootDirFile);
             }
         }
         //判断是否有复制失败的文件
@@ -124,49 +123,44 @@ public class BackupTask extends Thread {
     }
 
     /**
-     * 遍历文件树
+     * 遍历文件树，统计
      *
      * @param fileTreeNode  节点对象
      * @param documentFile  SAF获取到的目标文件根路径
      * @param rootTargetDir 普通复制方式，目标文件夹路径
-     * @param isStatistics  是否为检查数量
      */
-    private void iterateFileTree(FileTreeNode fileTreeNode, DocumentFile documentFile, String rootTargetDir, boolean isStatistics) {
+    private void iterateFileTree(FileTreeNode fileTreeNode, DocumentFile documentFile, String rootTargetDir) {
         if (null != fileTreeNode) {
             File file = new File(fileTreeNode.path);
             //判断源文件、文件夹是否存在
             if (file.exists()) {
                 if (file.isDirectory()) {//文件夹
                     if (isStatistics & fileTreeNode.isSelectedDir) {//选中整个文件夹，统计时自动生成子节点并添加，然后取消该节点全选状态
-                            //先清空子节点，防止重复添加
-                            if (null != fileTreeNode.nodes) {
-                                fileTreeNode.nodes.clear();
-                            }
-                            //打开路径，获取路径文件夹下的所有子文件名
-                            File dir = new File(fileTreeNode.path);
-                            String[] fileNames = dir.list();
-                            //判断是否含有子文件
-                            if (null != fileNames && fileNames.length > 0) {
-                                //遍历子文件
-                                for (String name : fileNames) {
-                                    //取出子文件
-                                    File temp = new File(new StringBuilder(fileTreeNode.path).append(File.separator).append(name).toString());
-                                    if (temp.exists()) {
-                                        FileTreeNode childNode = new FileTreeNode(
-                                                temp.getName(), temp.getAbsolutePath(),
-                                                fileTreeNode, true);
+                        //先清空子节点，防止重复添加
+                        if (null != fileTreeNode.nodes) {
+                            fileTreeNode.nodes.clear();
+                        }
+                        //打开路径，获取路径文件夹下的所有子文件名
+                        File dir = new File(fileTreeNode.path);
+                        String[] fileNames = dir.list();
+                        //判断是否含有子文件
+                        if (null != fileNames && fileNames.length > 0) {
+                            //遍历子文件
+                            for (String name : fileNames) {
+                                //取出子文件
+                                File temp = new File(new StringBuilder(fileTreeNode.path).append(File.separator).append(name).toString());
+                                if (temp.exists()) {
+                                    FileTreeNode childNode = new FileTreeNode(
+                                            temp.getName(), temp.getAbsolutePath(),
+                                            fileTreeNode, true);
+                                    fileTreeNode.nodes.add(childNode);
+                                    if (temp.isDirectory()) {
                                         fileTreeNode.nodes.add(childNode);
-                                        if (temp.isDirectory()) {
-                                            fileTreeNode.nodes.add(childNode);
-                                            iterateFileTree(childNode, documentFile, rootTargetDir, isStatistics);
-                                        } else {
-                                            PROGRESS.totalFileCount++;
-                                            PROGRESS.fileListStaticisces.add(temp.getAbsolutePath());
-                                            EventBus.getDefault().post(PROGRESS);
-                                        }
+                                        iterateFileTree(childNode, documentFile, rootTargetDir);
                                     }
                                 }
                             }
+                        }
                         fileTreeNode.isSelectedDir = false;
                     } else if (null != fileTreeNode.nodes && fileTreeNode.nodes.size() > 0) {//文件夹，遍历子文件
                         //正式复制时，自动创建路径文件夹
@@ -179,7 +173,7 @@ public class BackupTask extends Thread {
                         //遍历子文件
                         if (fileTreeNode.nodes.size() > 0) {
                             for (FileTreeNode subNode : fileTreeNode.nodes) {
-                                iterateFileTree(subNode, documentFile, rootTargetDir, isStatistics);
+                                iterateFileTree(subNode, documentFile, rootTargetDir);
                             }
                         }
                     }
@@ -188,8 +182,6 @@ public class BackupTask extends Thread {
                         PROGRESS.totalFileCount++;
                         PROGRESS.fileListStaticisces.add(fileTreeNode.path);
                         EventBus.getDefault().post(PROGRESS);
-                    } else {
-                        copyFile(fileTreeNode.path, rootTargetDir, documentFile);
                     }
                 }
 
@@ -207,20 +199,21 @@ public class BackupTask extends Thread {
     private void copyFile(String path, String targetPath, DocumentFile documentFile) {
         BackupTask.PROGRESS.currentFilePath = path;
         EventBus.getDefault().post(PROGRESS);
-
+        //新建线程，复制文件
         CopyTask task = new CopyTask(path, targetPath, documentFile);
         task.isSkipExistedFiles = isSkipExistedFiles;
         ThreadManager.getDefault().excuteAsync(task);
+        //循环,监听复制过程
         isCopying = true;
         while (isCopying) {
             try {
-                Thread.sleep(100);
+                Thread.sleep(1L);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+            //刷新复制进度
+            EventBus.getDefault().post(PROGRESS);
         }
-        //每当文件复制完，休眠结束，继续下一个
-        EventBus.getDefault().post(PROGRESS);
     }
 
     /**

@@ -45,8 +45,14 @@ public class CopyProgress {
      */
     public List<FailLog> failList;
 
+    /**
+     * 统计获得的文件列表
+     */
     public List<String> fileListStaticisces;
 
+    /**
+     * 已复制的文件列表
+     */
     public List<String> fileListCopy;
 
     public CopyProgress() {

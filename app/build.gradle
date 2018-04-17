@@ -11,8 +11,8 @@ android {
         applicationId "com.yifan.sdcardbackuper"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1001
-        versionName "1.0.0.1"
+        versionCode 1202
+        versionName "1.2.0.2"
     }
     buildTypes {
         debug{

@@ -95,4 +95,10 @@ public class Constants {
      */
     public static final String KEY_PREFERENCES_SKIP_EXISTED_FILES = "key_preferences_skip_existed_files";
     public static final boolean VALUE_PREFERENCES_SKIP_EXISTED_FILES = true;
+
+
+    /**
+     * PreferencesKey - SAF框架提示
+     */
+    public static final String KEY_PREFERENCES_SAF_TIPS= "key_preferences_saf_tips";
 }

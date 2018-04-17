@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.yifan.sdcardbackuper.ApplicationContext;
 import com.yifan.sdcardbackuper.R;
 import com.yifan.sdcardbackuper.base.OnFunctionBarChangedListener;
 import com.yifan.sdcardbackuper.model.CopyProgress;
@@ -37,6 +38,7 @@ import com.yifan.sdcardbackuper.task.BackupChannelTask;
 import com.yifan.sdcardbackuper.task.backup.Backup;
 import com.yifan.sdcardbackuper.task.backup.BackupTask;
 import com.yifan.sdcardbackuper.task.backup.TaskStatus;
+import com.yifan.sdcardbackuper.task.backup.TestTask;
 import com.yifan.sdcardbackuper.task.backup.ThreadManager;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;
@@ -127,6 +129,8 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
 
         setContentView(R.layout.activity_main, 0, false);
 
+
+        EventBus.getDefault().register(this);
     }
 
     @SuppressLint("RestrictedApi")
@@ -284,11 +288,20 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                         });
                         builder.create().show();
                     } else {
-                        Toast.makeText(this, R.string.storage_permission_has_limited, Toast.LENGTH_SHORT).show();
+                        //只提示一次
+                        if (PreferenceManager.getDefaultSharedPreferences(
+                                ApplicationContext.getInstance()).getBoolean(Constants.KEY_PREFERENCES_SAF_TIPS, true)) {
+                            Toast.makeText(this, R.string.storage_permission_has_limited, Toast.LENGTH_SHORT).show();
+                        }
+                        //标记不用再提示
+                        PreferenceManager.getDefaultSharedPreferences(
+                                ApplicationContext.getInstance()).edit().putBoolean(Constants.KEY_PREFERENCES_SAF_TIPS, false).commit();
+                        //版本判断，4.4之后才使用SAF
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                             Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-                            startActivityForResult(
-                                    Intent.createChooser(intent, "DocumentProvider"), REQUEST_CODE_DOCUMENT_PROVIDER);
+                            startActivityForResult(Intent.createChooser(intent,
+                                    ResourcesUtils.getString(R.string.tips_please_select_target)),
+                                    REQUEST_CODE_DOCUMENT_PROVIDER);
                         }
                     }
                 } else {
@@ -299,14 +312,8 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
+    protected void onDestroy() {
+        super.onDestroy();
         EventBus.getDefault().unregister(this);
     }
 
@@ -374,6 +381,9 @@ public class MainActivity extends TitleBarActivity implements OnFunctionBarChang
                         Backup.BACKUP_TYPE_PHOTO :
                         Backup.BACKUP_TYPE_FILE, pickedDir));
                 ThreadManager.getDefault().excuteAsync(mBackupTask);
+
+//                TestTask task = new TestTask(pickedDir);
+//                ThreadManager.getDefault().excuteAsync(task);
             }
         } else {//获取失败
             Toast.makeText(this, R.string.cancel_copy, Toast.LENGTH_SHORT).show();

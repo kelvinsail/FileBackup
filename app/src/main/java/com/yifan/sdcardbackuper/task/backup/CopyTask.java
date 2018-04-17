@@ -1,20 +1,20 @@
 package com.yifan.sdcardbackuper.task.backup;
 
-import android.preference.PreferenceManager;
 import android.support.v4.provider.DocumentFile;
 import android.text.TextUtils;
 import android.util.Log;
 
 import com.yifan.sdcardbackuper.ApplicationContext;
-import com.yifan.sdcardbackuper.model.FailLog;
-import com.yifan.sdcardbackuper.utils.Constants;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.Flushable;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.channels.FileChannel;
 
 /**
@@ -66,6 +66,8 @@ public class CopyTask extends Thread {
         FileOutputStream outputStream = null;
         FileChannel fileChannelInput = null;
         FileChannel fileChannelOutput = null;
+//        BufferedInputStream bis = null;
+//        BufferedOutputStream bos = null;
         //记录开始时间
         long stratTime = System.currentTimeMillis();
         try {
@@ -76,7 +78,7 @@ public class CopyTask extends Thread {
             if (null != mRootDirFile) {
                 String[] paths = inputFile.getParentFile().getAbsolutePath().split(File.separator);
                 DocumentFile targetDir = mRootDirFile;
-                //判断路径文件大小写、是否存在等
+                //判断路径、文件大小写、是否存在等
                 for (String dirName : paths) {
                     if (!TextUtils.isEmpty(dirName)) {
                         String[] files = new String[]{dirName, dirName.substring(0, 1).toUpperCase() + dirName.substring(1),
@@ -97,6 +99,8 @@ public class CopyTask extends Thread {
                         }
                     }
                 }
+                Log.i(TAG, "dfile 创建路径 cost: "+new BigDecimal(System.currentTimeMillis() - stratTime)
+                        .divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).doubleValue());
                 DocumentFile targetFile = targetDir.findFile(inputFile.getName());
                 //判断是否跳过
                 if (isSkipExistedFiles && com.yifan.sdcardbackuper.utils.FileUtils.compareTwoFiles(inputFile, targetFile)) {
@@ -105,7 +109,13 @@ public class CopyTask extends Thread {
                     targetFile.delete();
                 }
                 targetFile = targetDir.createFile(com.yifan.sdcardbackuper.utils.FileUtils.getMimeType(new File(mFilePath)), inputFile.getName());
+
+                Log.i(TAG, "dfile 创建文件 cost: "+new BigDecimal(System.currentTimeMillis() - stratTime)
+                        .divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).doubleValue());
+
                 outputStream = (FileOutputStream) ApplicationContext.getInstance().getContentResolver().openOutputStream(targetFile.getUri());
+                Log.i(TAG, "dfile final cost: "+new BigDecimal(System.currentTimeMillis() - stratTime)
+                        .divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).doubleValue());
             } else {
                 File file = new File(new StringBuilder().append(mTargetPath).append(File.separator).append(mFilePath).toString());
                 if (isSkipExistedFiles && com.yifan.sdcardbackuper.utils.FileUtils.compareTwoFiles(new File(mFilePath), file)) {
@@ -115,8 +125,21 @@ public class CopyTask extends Thread {
                 }
                 file.createNewFile();
                 outputStream = new FileOutputStream(file);
+                Log.i(TAG, "file 判断cost: "+new BigDecimal(System.currentTimeMillis() - stratTime)
+                        .divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP).doubleValue());
             }
             if (!isSkip) {
+                //第一种方法字节流传输
+//                bis = new BufferedInputStream(inputStream);
+//                bos = new BufferedOutputStream(outputStream);
+//                byte[] bys = new byte[4096];
+//                int len = 0;
+//                while ((len = bis.read(bys)) != -1) {
+//                    bos.write(bys, 0, len);
+//                }
+//                bos.flush();
+
+                //第三种方法：管道传输
                 //获得文件通道
                 fileChannelInput = inputStream.getChannel();
                 fileChannelOutput = outputStream.getChannel();
@@ -125,14 +148,18 @@ public class CopyTask extends Thread {
             }
             BackupTask.PROGRESS.fileListCopy.add(mFilePath);
             BackupTask.PROGRESS.completedCount++;
-            if (isSkip){
+            if (isSkip) {
                 BackupTask.PROGRESS.skipedCount++;
             }
+//            bis.close();
+//            bos.close();
+            fileChannelInput.close();
+            fileChannelOutput.close();
+            inputStream.close();
+            outputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            //关闭流、对象
-            closeObject(inputStream, outputStream, fileChannelInput, fileChannelOutput);
             try {
                 Thread.sleep(1l);
             } catch (InterruptedException e) {
@@ -140,30 +167,13 @@ public class CopyTask extends Thread {
             }
             BackupTask.isCopying = false;
         }
-        long cost = System.currentTimeMillis() - stratTime;
-        Log.i(TAG, "copy to targetDir cost: " + cost + " ,speed: " + (0 == cost ? 0 : mFileSize / cost / 100));
+        //计算时间效率
+        mFileSize = new BigDecimal(mFileSize).divide(new BigDecimal(1024), 2, BigDecimal.ROUND_HALF_UP).longValue();
+
+        BigDecimal cost = new BigDecimal(System.currentTimeMillis() - stratTime).divide(new BigDecimal(1000), 2, BigDecimal.ROUND_HALF_UP);
+        double speed = new BigDecimal(mFileSize).divide(cost, 2, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+        Log.i(TAG, mFileSize + "KB copy to targetDir cost: " + cost + "s ,speed: " + speed + "KB/s");
     }
 
-    /**
-     * 批量关闭管道、流对象
-     *
-     * @param closeables
-     */
-    private void closeObject(Closeable... closeables) {
-        if (null != closeables && closeables.length > 0) {
-            for (Closeable closeable : closeables) {
-                try {
-                    if (null != closeable && closeable instanceof Flushable) {
-                        ((Flushable) closeable).flush();
-                    }
-                    if (null != closeable) {
-                        closeable.close();
-                        closeables = null;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
 }
