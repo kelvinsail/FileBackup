@@ -96,7 +96,7 @@ public class SettingFragment extends TitleBarFragment implements BaseRecyclerAda
                         ResourcesUtils.getString(R.string.unable_copy_to_storage),
                         Constants.KEY_PREFERENCES_COPY_TO_STORAGE,
                         PreserencesValueType.Boolean, Constants.VALUE_PREFERENCES_COPY_TO_STORAGE, true)
-                .addSubItem(R.id.setting_backup_skip_existed_files, null, Type.switchable,
+                .addSubItem(R.id.setting_backup_copy_to_storage, null, Type.switchable,
                         ResourcesUtils.getString(R.string.skip_existed_files),
                         Constants.KEY_PREFERENCES_SKIP_EXISTED_FILES,
                         PreserencesValueType.Boolean, Constants.VALUE_PREFERENCES_SKIP_EXISTED_FILES, true)
@@ -137,6 +137,7 @@ public class SettingFragment extends TitleBarFragment implements BaseRecyclerAda
 
     @Override
     public void onItemChecked(View view, boolean isChecked, int position) {
+        //注意，不同item的view不是同意类型
         Log.i(TAG, "onItemChecked: " + mAdapter.getItem(position).getTitle() + " , " + isChecked);
         Preferences preferences = mAdapter.getItem(position);
         if (null != preferences && null != mAdapter.getPreferences()) {
@@ -154,7 +155,6 @@ public class SettingFragment extends TitleBarFragment implements BaseRecyclerAda
                 }
             }
             mAdapter.getPreferences().edit().putBoolean(preferences.getPreferencesKey(), isChecked).commit();
-
         }
     }
 

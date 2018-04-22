@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/FileBackup.iml" filepath="$PROJECT_DIR$/FileBackup.iml" />
-      <module fileurl="file://$PROJECT_DIR$/SDcardBackuper.iml" filepath="$PROJECT_DIR$/SDcardBackuper.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/fileiterator/fileiterator.iml" filepath="$PROJECT_DIR$/libraries/fileiterator/fileiterator.iml" />
       <module fileurl="file://$PROJECT_DIR$/libraries/libraries.iml" filepath="$PROJECT_DIR$/libraries/libraries.iml" />

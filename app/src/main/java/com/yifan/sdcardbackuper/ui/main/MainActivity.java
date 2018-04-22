@@ -38,7 +38,6 @@ import com.yifan.sdcardbackuper.task.BackupChannelTask;
 import com.yifan.sdcardbackuper.task.backup.Backup;
 import com.yifan.sdcardbackuper.task.backup.BackupTask;
 import com.yifan.sdcardbackuper.task.backup.TaskStatus;
-import com.yifan.sdcardbackuper.task.backup.TestTask;
 import com.yifan.sdcardbackuper.task.backup.ThreadManager;
 import com.yifan.sdcardbackuper.ui.main.file.FileListPagerFragment;
 import com.yifan.sdcardbackuper.ui.main.photo.PhotoPagerFragment;

@@ -228,14 +228,13 @@ public class PreferencesAdapter extends BaseRecyclerAdapter<BasePrefHolder>
                 }
             }
             if (preferences instanceof PreferencesGroup) {
+                itemView.setClickable(false);
                 for (int i = 0; i < ((PreferencesGroup) preferences).getItems().size(); i++) {
                     Preferences item = ((PreferencesGroup) preferences).getItems().get(i);
                     BasePrefHolder holder = null;
                     switch (item.getType()) {
                         case normal://普通选项
                             holder = getNormalHolder(null);
-                            holder.setData(position, item);
-                            holder.setSubPosition(i);
                             ((ViewGroup) itemView).addView(holder.itemView);
                             break;
                         case switchable://开关选项
@@ -314,6 +313,11 @@ public class PreferencesAdapter extends BaseRecyclerAdapter<BasePrefHolder>
                 switchCompat.setChecked(isChecked);
                 switchCompat.setOnCheckedChangeListener(PreferencesAdapter.this);
             }
+        }
+
+        @Override
+        public void setSubPosition(int position) {
+            super.setSubPosition(switchCompat,position);
         }
     }
 
